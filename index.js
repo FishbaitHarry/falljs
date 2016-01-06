@@ -1,58 +1,43 @@
-var handlers = [appHandler, httpHandler, fileHandler];
-var modules = {};
+function createScope(parentScope) {
+	var handlers = [appHandler, httpHandler, fileHandler];
+	var modules = {};
 
-function dereference(uri) {
-	return handlers.find(function(handler) {
-		return handler.canHandle(uri);
-	})(uri);
-}
+	function getModule(id) {
+		return modules[id] || parentScope.getModule(id);
+	}
 
-// handles app://module-name uris
-function appHandler(uri) {
-	var id = uri.slice(6);
-	var module = modules[id];
-	var deps = module.deps.objectMap(dereference);
-	return Promise.all(deps).then(module);
-}
+	// handles [String] with URI of nay supported type
+	// returns [Promise] with result of handler
+	function dereference(uri) {
+		return handlers.find(function(handler) {
+			return handler.canHandle(uri);
+		})(uri);
+	}
 
-// handles http://some.address.com/stuff GETs
-function httpHandler(uri) {
-	return $.ajax({url: uri});
-}
+	// handles [String] app://module-name uris
+	// returns [Promise] with result of module-name function
+	function appHandler(uri) {
+		var id = uri.slice(6);
+		var module = modules[id];
+		var deps = module.deps.objectMap(dereference);
+		var readyObject = Promise.all(deps).then(module);
+		modules[id] = readyObject;
+	}
 
-// handles file:///etc/passwd uris
-function fileHandler(uri) {
-	var path = uri.slice(7);
-	return Promise.fromNode(fs.readFile, path);
-}
+	// handles http://some.address.com/stuff GETs
+	// returns [Promise] with content of a GET request
+	function httpHandler(uri) {
+		return $.ajax({url: uri});
+	}
 
-// example modules
+	// handles file:///etc/passwd uris
+	// returns [Promise] with file contents
+	function fileHandler(uri) {
+		var path = uri.slice(7);
+		return Promise.fromNode(fs.readFile, path);
+	}
 
-modules.userController = userController;
-modules.userController.scope = 'request';
-modules.userController.deps = {
-	req: 'app://request',
-	res: 'app://response',
-	userService: 'app://userService'
-};
-function userController(params) {
-	var req = params.req;
-	return params.userService
-	.findUser({id: req.params.id})
-	.then(function(user) {
-		res.json(user.toJSON());
-	});
-}
-
-modules.renderer = renderer;
-modules.renderer.scope = 'request';
-modules.renderer.deps = {
-	model: 'app://model',
-	res: 'app://response',
-	config: 'app://config'
-};
-function renderer(params) {
-	var template = config.getTemplates().first();
-	var renderedHtml = template(params.model);
-	params.res.send(renderedHtml);
+	return {
+		getModule: getModule
+	}
 }
