@@ -1,0 +1,27 @@
+{
+  "name": "falljs",
+  "version": "0.0.1",
+  "description": "DI for JS",
+  "main": "index.js",
+  "scripts": {
+    "test": "jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FishbaitHarry/falljs.git"
+  },
+  "keywords": [
+    "container"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FishbaitHarry/falljs/issues"
+  },
+  "homepage": "https://github.com/FishbaitHarry/falljs#readme",
+  "dependencies": {
+    "bluebird": "^3.4.6"
+  },
+  "devDependencies": {
+    "jasmine": "^2.3.2"
+  }
+}
