@@ -1,0 +1,10 @@
+{
+    "description": "Loaded by CLI, it will start a web-server product.",
+    "factories": ["./comps/*.js", "falljs/stdlib/*"],
+    "products": {
+        "someSecretKey": "qwerty1233246457689896",
+        "someProductUri": "factories-can-inject-this!",
+        "anotherPreloaded": ["all", "simple", "types", "allowed"]
+    },
+    "get": "app://web-server"
+}

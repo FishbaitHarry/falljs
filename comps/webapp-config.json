@@ -1,0 +1,18 @@
+{
+    "description": "We try to define a universal app with UI components.",
+    "description2": "Server has access to everything and can render html.",
+    "description3": "Client proxies some product requests to backend.",
+
+    "factories": [
+        "./server/*.js",
+        "./client/*.js",
+        "falljs/clientSideScopes"
+    ],
+    "get": "app://web-server",
+
+    "clientSideConfig": {
+        "description": "This part defines the scope available in the browser.",
+        "factories": ["client/*.js"],
+        "get": "view://main"
+    }
+}
